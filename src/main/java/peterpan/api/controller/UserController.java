@@ -259,4 +259,50 @@ public class UserController {
                             "message", "Lỗi: " + e.getMessage()));
         }
     }
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(
+            @RequestHeader(name = "X-Session-Key") String sessionKey,
+            @RequestBody Map<String, String> passwordData) {
+
+        if (sessionKey == null || sessionKey.isEmpty()) {
+            return new ResponseEntity<>(
+                    Map.of("status", "error", "message", "Thiếu Session Key"),
+                    HttpStatus.FORBIDDEN);
+        }
+
+        Optional<User> userOpt = userRepository.findBySessionKey(sessionKey);
+
+        if (userOpt.isEmpty()) {
+            return new ResponseEntity<>(
+                    Map.of("status", "error", "message", "Session không hợp lệ"),
+                    HttpStatus.FORBIDDEN);
+        }
+
+        User user = userOpt.get();
+
+        String oldPassword = passwordData.get("old_password");
+        String newPassword = passwordData.get("new_password");
+
+        if (oldPassword == null || newPassword == null ||
+                oldPassword.isEmpty() || newPassword.isEmpty()) {
+            return new ResponseEntity<>(
+                    Map.of("status", "error", "message", "Vui lòng nhập đầy đủ thông tin"),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        String hashedOldPassword = hashPassword(oldPassword);
+
+        if (!hashedOldPassword.equals(user.getPassword())) {
+            return new ResponseEntity<>(
+                    Map.of("status", "error", "message", "Mật khẩu cũ không đúng"),
+                    HttpStatus.UNAUTHORIZED);
+        }
+
+        user.setPassword(hashPassword(newPassword));
+        userRepository.save(user);
+
+        return new ResponseEntity<>(
+                Map.of("status", "success", "message", "Đổi mật khẩu thành công"),
+                HttpStatus.OK);
+    }
 }
