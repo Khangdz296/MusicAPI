@@ -17,4 +17,9 @@ public interface SongRepository extends JpaRepository<Song, Long> {
 
     List<Song> findByCategoryId(Long categoryId);
     List<Song> findByArtist(String artistName);
+    // A. Lấy 10 bài có Views cao nhất (Cho BXH)
+    List<Song> findTop10ByOrderByViewsDesc();
+
+    // B. Lấy 5 bài có ID lớn nhất (Cho mục Mới phát hành - thay cho cái 7 ngày phức tạp)
+    List<Song> findTop5ByOrderByIdDesc();
 }

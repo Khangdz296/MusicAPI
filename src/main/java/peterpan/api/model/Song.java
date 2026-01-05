@@ -15,21 +15,26 @@ public class Song {
     private String imageUrl;
     private String fileUrl;
     private int duration;
-    
+
     @Column(name = "is_favorite")
     private boolean isFavorite;
-    
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    // 👇 MỚI: Thêm biến views (Mặc định là 0)
+    @Column(name = "views")
+    private int views = 0;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
-    
+
     public Song() {
     }
 
-    public Song(Long id, String title, String artist, String imageUrl, String fileUrl, int duration, boolean isFavorite, LocalDateTime createdAt, Category category) {
+    // Constructor cập nhật (Thêm views vào cuối nếu thích, hoặc không cần cũng được vì JPA tự set)
+    public Song(Long id, String title, String artist, String imageUrl, String fileUrl, int duration, boolean isFavorite, LocalDateTime createdAt, Category category, int views) {
         this.id = id;
         this.title = title;
         this.artist = artist;
@@ -39,8 +44,10 @@ public class Song {
         this.isFavorite = isFavorite;
         this.createdAt = createdAt;
         this.category = category;
+        this.views = views;
     }
 
+    // --- Getters & Setters cũ giữ nguyên ---
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -67,4 +74,8 @@ public class Song {
 
     public Category getCategory() { return category; }
     public void setCategory(Category category) { this.category = category; }
+
+    // 👇 MỚI: Getter & Setter cho Views (Bắt buộc phải có)
+    public int getViews() { return views; }
+    public void setViews(int views) { this.views = views; }
 }
