@@ -62,12 +62,17 @@ public class UserController {
         user.setPassword(hashPassword(user.getPassword()));
         user.setSessionKey(UUID.randomUUID().toString());
 
+        // Set role mặc định là USER cho tất cả user đăng ký
+        user.setRole("USER");
+
         String newOtp = generateRandomOtp();
         user.setOtpCode(newOtp);
         user.setIsActive(false);
 
         User savedUser = userRepository.save(user);
         System.out.println("Đã lưu user vào database, ID: " + savedUser.getId());
+        System.out.println("Role: " + savedUser.getRole());
+
         try {
             System.out.println("Đang gửi OTP qua SendGrid...");
             sendGridEmailService.sendOtpEmailHtml(savedUser.getEmail(), newOtp);
@@ -113,9 +118,15 @@ public class UserController {
             user.setSessionKey(newSessionKey);
             userRepository.save(user);
 
+            // THÊM ROLE VÀO RESPONSE
             return new ResponseEntity<>(
-                    Map.of("status", "success", "message", "Đăng nhập thành công!",
-                            "user_id", user.getId(), "session_key", newSessionKey),
+                    Map.of(
+                            "status", "success",
+                            "message", "Đăng nhập thành công!",
+                            "user_id", user.getId(),
+                            "session_key", newSessionKey,
+                            "role", user.getRole() != null ? user.getRole() : "USER" // Thêm role
+                    ),
                     HttpStatus.OK);
         } else {
             return new ResponseEntity<>(

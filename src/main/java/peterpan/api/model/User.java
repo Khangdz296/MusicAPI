@@ -1,12 +1,12 @@
 package peterpan.api.model;
 
-import jakarta.persistence.*; 
+import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "users")
 public class User {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -15,21 +15,24 @@ public class User {
     private String username;
 
     @Column(nullable = false)
-    private String password; 
+    private String password;
 
     @Column(nullable = false, unique = true)
     private String email;
 
     private String fullName;
     private String phone;
-    
-    private String sessionKey; 
 
-    @Temporal(TemporalType.TIMESTAMP) 
-    private Date joinDate = new Date(); 
+    private String sessionKey;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date joinDate = new Date();
 
     private Boolean isActive = false;
-    private String otpCode; 
+    private String otpCode;
+    @Column(nullable = false)
+    private String role = "USER";
+
 
     public User() {
     }
@@ -40,7 +43,8 @@ public class User {
         this.email = email;
         this.fullName = fullName;
         this.phone = phone;
-        this.isActive = false; 
+        this.isActive = false;
+        this.role = "USER";
     }
 
 
@@ -91,7 +95,7 @@ public class User {
     public void setPhone(String phone) {
         this.phone = phone;
     }
-    
+
     public Boolean getIsActive() {
         return isActive;
     }
@@ -107,7 +111,7 @@ public class User {
     public void setOtpCode(String otpCode) {
         this.otpCode = otpCode;
     }
-    
+
     public String getSessionKey() {
         return sessionKey;
     }
@@ -122,5 +126,12 @@ public class User {
 
     public void setJoinDate(Date joinDate) {
         this.joinDate = joinDate;
+    }
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }
