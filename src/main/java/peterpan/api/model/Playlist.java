@@ -1,6 +1,6 @@
 package peterpan.api.model;
 
-import jakarta.persistence.*; // Nếu dùng Spring Boot cũ (<3.0) thì sửa thành javax.persistence.*
+import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
@@ -16,16 +16,13 @@ public class Playlist {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(name = "is_public")
-    private boolean isPublic;
-
-    // Liên kết với User (Người tạo)
+    // Quan hệ N-1: Nhiều Playlist thuộc về 1 User
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id") // Khóa ngoại lưu user_id
     private User user;
 
-    // Liên kết với Song (Một playlist có nhiều bài hát)
-    // Tự động tạo ra bảng trung gian 'playlist_songs'
+    // Quan hệ N-N: 1 Playlist có nhiều Song
+    // Chỉ khai báo ở đây, bên class Song KHÔNG khai báo ngược lại
     @ManyToMany
     @JoinTable(
             name = "playlist_songs",
@@ -45,9 +42,6 @@ public class Playlist {
 
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
-
-    public boolean isPublic() { return isPublic; }
-    public void setPublic(boolean aPublic) { isPublic = aPublic; }
 
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
