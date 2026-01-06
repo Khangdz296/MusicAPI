@@ -4,8 +4,12 @@ package peterpan.api.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import peterpan.api.model.Artist;
+import peterpan.api.model.Category;
 import peterpan.api.model.Song;
 import peterpan.api.model.User;
+import peterpan.api.repository.ArtistRepository;
+import peterpan.api.repository.CategoryRepository;
 import peterpan.api.repository.SongRepository;
 import peterpan.api.repository.UserRepository;
 
@@ -20,6 +24,12 @@ public class AdminController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ArtistRepository artistRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     // 1. Thêm bài hát mới (Upload nhạc)
     @PostMapping("/songs")
@@ -67,5 +77,54 @@ public class AdminController {
             // ... cập nhật các trường khác ...
             return ResponseEntity.ok(songRepository.save(song));
         }).orElse(ResponseEntity.notFound().build());
+    }
+    @PostMapping("/artists")
+    public Artist addArtist(@RequestBody Artist artist) {
+        return artistRepository.save(artist);
+    }
+
+    @PutMapping("/artists/{id}")
+    public Artist updateArtist(@PathVariable Long id, @RequestBody Artist artist) {
+        // Logic tìm theo ID và update set name, image...
+        return artistRepository.save(artist);
+    }
+
+    @DeleteMapping("/artists/{id}")
+    public void deleteArtist(@PathVariable Long id) {
+        artistRepository.deleteById(id);
+    }
+
+    // URL: POST /api/admin/categories
+    @PostMapping("/categories")
+    public Category addCategory(@RequestBody Category category) {
+        // Có thể thêm logic kiểm tra dữ liệu rỗng ở đây nếu muốn
+        return categoryRepository.save(category);
+    }
+
+    // 3. CẬP NHẬT CATEGORY (SỬA)
+    // URL: PUT /api/admin/categories/{id}
+    @PutMapping("/categories/{id}")
+    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody Category categoryDetails) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
+
+        // Cập nhật thông tin mới
+        category.setName(categoryDetails.getName());
+        category.setImageUrl(categoryDetails.getImageUrl());
+
+        // Lưu xuống DB
+        Category updatedCategory = categoryRepository.save(category);
+        return ResponseEntity.ok(updatedCategory);
+    }
+
+    // 4. XÓA CATEGORY
+    // URL: DELETE /api/admin/categories/{id}
+    @DeleteMapping("/categories/{id}")
+    public ResponseEntity<?> deleteCategory(@PathVariable Long id) {
+        if (categoryRepository.existsById(id)) {
+            categoryRepository.deleteById(id);
+            return ResponseEntity.ok().build(); // Trả về 200 OK
+        }
+        return ResponseEntity.notFound().build(); // Trả về 404 nếu không tìm thấy ID
     }
 }
