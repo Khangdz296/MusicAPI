@@ -1,5 +1,6 @@
 package peterpan.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -22,7 +23,6 @@ public class Song {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    // 👇 MỚI: Thêm biến views (Mặc định là 0)
     @Column(name = "views")
     private int views = 0;
 
@@ -30,11 +30,17 @@ public class Song {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @ManyToOne
+    @JoinColumn(name = "album_id")
+    @JsonIgnore // Chặn loop vô tận
+    private Album album;
+
+    // 1. Constructor rỗng (Bắt buộc cho JPA)
     public Song() {
     }
 
-    // Constructor cập nhật (Thêm views vào cuối nếu thích, hoặc không cần cũng được vì JPA tự set)
-    public Song(Long id, String title, String artist, String imageUrl, String fileUrl, int duration, boolean isFavorite, LocalDateTime createdAt, Category category, int views) {
+    // 2. Constructor
+    public Song(Long id, String title, String artist, String imageUrl, String fileUrl, int duration, boolean isFavorite, LocalDateTime createdAt, Category category, Album album, int views) {
         this.id = id;
         this.title = title;
         this.artist = artist;
@@ -44,10 +50,11 @@ public class Song {
         this.isFavorite = isFavorite;
         this.createdAt = createdAt;
         this.category = category;
+        this.album = album;
         this.views = views;
     }
 
-    // --- Getters & Setters cũ giữ nguyên ---
+    // --- Getters & Setters ---
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -72,10 +79,12 @@ public class Song {
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
+    public int getViews() { return views; }
+    public void setViews(int views) { this.views = views; }
+
     public Category getCategory() { return category; }
     public void setCategory(Category category) { this.category = category; }
 
-    // 👇 MỚI: Getter & Setter cho Views (Bắt buộc phải có)
-    public int getViews() { return views; }
-    public void setViews(int views) { this.views = views; }
+    public Album getAlbum() { return album; }
+    public void setAlbum(Album album) { this.album = album; }
 }
