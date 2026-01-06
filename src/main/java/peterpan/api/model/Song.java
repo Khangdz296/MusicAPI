@@ -12,7 +12,10 @@ public class Song {
     private Long id;
 
     private String title;
-    private String artist;
+    @ManyToOne
+    @JoinColumn(name = "artist_id")
+
+    private Artist artist;
     private String imageUrl;
     private String fileUrl;
     private int duration;
@@ -40,7 +43,7 @@ public class Song {
     }
 
     // 2. Constructor
-    public Song(Long id, String title, String artist, String imageUrl, String fileUrl, int duration, boolean isFavorite, LocalDateTime createdAt, Category category, Album album, int views) {
+    public Song(Long id, String title, Artist artist, String imageUrl, String fileUrl, int duration, boolean isFavorite, LocalDateTime createdAt, Category category, Album album, int views) {
         this.id = id;
         this.title = title;
         this.artist = artist;
@@ -61,8 +64,8 @@ public class Song {
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
 
-    public String getArtist() { return artist; }
-    public void setArtist(String artist) { this.artist = artist; }
+    public Artist getArtist() { return artist; }
+    public void setArtist(Artist artist) { this.artist = artist; }
 
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }

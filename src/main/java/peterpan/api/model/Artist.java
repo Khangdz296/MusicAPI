@@ -1,6 +1,8 @@
 package peterpan.api.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.List;
 
 @Entity
 @Table(name = "artists")
@@ -9,19 +11,26 @@ public class Artist {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;        // Tên nghệ sĩ (VD: Sơn Tùng M-TP)
-    private String imageUrl;    // Avatar nghệ sĩ
+    private String name;
+    private String imageUrl;
 
-    public Artist() {
-    }
+    @Column(columnDefinition = "TEXT")
+    private String description; // Thêm mô tả
 
-    public Artist(Long id, String name, String imageUrl) {
-        this.id = id;
-        this.name = name;
-        this.imageUrl = imageUrl;
-    }
+    // 1. LIÊN KẾT 1-N VỚI BÀI HÁT
+    // Một ca sĩ có nhiều bài hát. Khi xóa ca sĩ, xóa luôn bài hát (CascadeType.ALL)
+    @OneToMany(mappedBy = "artist", cascade = CascadeType.ALL)
+    @JsonIgnore // Ngắt vòng lặp vô tận khi chuyển sang JSON
+    private List<Song> songs;
 
-    // Getter & Setter
+    // 2. LIÊN KẾT 1-N VỚI ALBUM
+    @OneToMany(mappedBy = "artist", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Album> albums;
+
+    public Artist() {}
+
+    // Getters & Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -30,4 +39,13 @@ public class Artist {
 
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public List<Song> getSongs() { return songs; }
+    public void setSongs(List<Song> songs) { this.songs = songs; }
+
+    public List<Album> getAlbums() { return albums; }
+    public void setAlbums(List<Album> albums) { this.albums = albums; }
 }
