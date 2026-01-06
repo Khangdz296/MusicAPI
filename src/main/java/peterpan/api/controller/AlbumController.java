@@ -1,6 +1,8 @@
 package peterpan.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import peterpan.api.model.Album;
@@ -28,5 +30,17 @@ public class AlbumController {
         return albumRepository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+    @GetMapping("/top-views")
+    public ResponseEntity<List<Album>> getTopAlbums() {
+        try {
+            // Gọi hàm không có Pageable
+            List<Album> topAlbums = albumRepository.findTopAlbumsByTotalViews();
+            return ResponseEntity.ok(topAlbums);
+        } catch (Exception e) {
+            // In ra lỗi chính xác trong Console của IntelliJ
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }
