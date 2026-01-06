@@ -7,6 +7,7 @@ import peterpan.api.model.Song;
 import peterpan.api.repository.SongRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/songs")
@@ -15,40 +16,53 @@ public class SongController {
     @Autowired
     private SongRepository songRepository;
 
-    // API 1: Lấy toàn bộ bài hát (Có thể dùng cho danh sách gợi ý)
+    // 1. Lấy toàn bộ bài hát
     @GetMapping
     public List<Song> getAllSongs() {
         return songRepository.findAll();
     }
 
-    // API 2: Tìm kiếm bài hát
+    // 2. Tìm kiếm bài hát (Theo tiêu đề hoặc nghệ sĩ)
     @GetMapping("/search")
     public List<Song> searchSongs(@RequestParam("q") String keyword) {
+        // Gọi hàm repository đã được map @Query chuẩn hóa
         return songRepository.findByTitleContainingIgnoreCaseOrArtistContainingIgnoreCase(keyword, keyword);
     }
 
-
-//    // API 3: Lấy nhạc mới cập nhật 7 ngày
-//    @GetMapping("/new-updated")
-//    public List<Song> getNewSongs() {
-//        return songRepository.findNewSongs7Days();
-//    }
-
+    // 3. Lấy nhạc mới cập nhật (Top 5 bài ID lớn nhất)
     @GetMapping("/new-updated")
     public List<Song> getNewSongs() {
         return songRepository.findTop5ByOrderByIdDesc();
     }
 
-    // THÊM MỚI: API 4 - Lấy BXH Top Views
+    // 4. BXH Top Views (Top 10)
     @GetMapping("/top-views")
     public ResponseEntity<List<Song>> getTopSongs() {
         List<Song> topSongs = songRepository.findTop10ByOrderByViewsDesc();
         return ResponseEntity.ok(topSongs);
     }
+
+    // 5. Lấy nhạc ngẫu nhiên (Banner Home)
     @GetMapping("/random")
     public ResponseEntity<List<Song>> getRandomSongs() {
         List<Song> list = songRepository.findRandomSongs();
         return ResponseEntity.ok(list);
     }
 
+    // 6. THÊM MỚI: Tăng lượt xem (Call khi người dùng bắt đầu phát nhạc)
+    @PostMapping("/{id}/view")
+    public ResponseEntity<String> incrementView(@PathVariable Long id) {
+        return songRepository.findById(id).map(song -> {
+            song.setViews(song.getViews() + 1);
+            songRepository.save(song);
+            return ResponseEntity.ok("View count updated: " + song.getViews());
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
+    // 7. THÊM MỚI: Lấy nhạc của một nghệ sĩ cụ thể (Hỗ trợ màn hình ArtistDetail)
+    @GetMapping("/artist/{artistId}")
+    public ResponseEntity<List<Song>> getSongsByArtist(@PathVariable Long artistId) {
+        List<Song> songs = songRepository.findByArtist_Id(artistId);
+        return ResponseEntity.ok(songs);
+    }
 }

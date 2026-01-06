@@ -1,7 +1,7 @@
 package peterpan.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties; // Import quan trọng
 import jakarta.persistence.*;
-
 import java.util.List;
 
 @Entity
@@ -14,35 +14,43 @@ public class Album {
 
     private String name;        // Tên Album
 
-    @Column(name = "artist_name")
-    private String artistName;  // Tên nghệ sĩ
+    // 👇 THAY ĐỔI QUAN TRỌNG: Dùng Object Artist thay vì String
+    @ManyToOne
+    @JoinColumn(name = "artist_id") // Tạo cột khóa ngoại artist_id
+    // Khi lấy Album, lấy luôn thông tin Artist, nhưng chặn list con của Artist để tránh loop
+    @JsonIgnoreProperties({"songs", "albums"})
+    private Artist artist;
 
     @Column(name = "image_url")
     private String imageUrl;    // Link ảnh bìa
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("album") // Chặn loop ngược lại từ Song lên Album
     private List<Song> songs;
 
-    // Constructor rỗng (Bắt buộc cho JPA)
+    // 1. Constructor rỗng (Bắt buộc cho JPA)
     public Album() {
     }
 
-    // Constructor đầy đủ
-    public Album(String name, String artistName, String imageUrl) {
+    // 2. Constructor đầy đủ (Đã sửa tham số artistName thành object artist)
+    public Album(String name, Artist artist, String imageUrl) {
         this.name = name;
-        this.artistName = artistName;
+        this.artist = artist;
         this.imageUrl = imageUrl;
     }
 
-    // Getters & Setters
+    // --- Getters & Setters ---
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public String getArtistName() { return artistName; }
-    public void setArtistName(String artistName) { this.artistName = artistName; }
+    // 👇 Sửa Getter: Trả về Object Artist
+    public Artist getArtist() { return artist; }
+    // 👇 Sửa Setter: Nhận vào Object Artist
+    public void setArtist(Artist artist) { this.artist = artist; }
 
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }

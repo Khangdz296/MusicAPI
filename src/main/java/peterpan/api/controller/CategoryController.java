@@ -20,20 +20,25 @@ public class CategoryController {
     @Autowired
     private SongRepository songRepository;
 
-    // API 1: Lấy tất cả danh mục (Cho màn hình Search Explore)
+    // API 1: Lấy tất cả danh mục
     @GetMapping
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
     }
 
-    // API 2: Lấy bài hát trong một danh mục (Khi bấm vào ô màu)
+    // API 2: Lấy bài hát trong một danh mục
     @GetMapping("/{id}/songs")
     public ResponseEntity<List<Song>> getSongsByCategory(@PathVariable Long id) {
-        // Kiểm tra xem category có tồn tại không
+        // 1. Kiểm tra danh mục có tồn tại không
         if (!categoryRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
+
+        // 2. Gọi hàm tìm kiếm mới trong Repository
+        // Cũ: findByCategoryId(id) -> Sai quy tắc đặt tên mới
+        // Mới: findByCategory_Id(id) -> JPA hiểu là tìm trong object Category lấy cái Id
         List<Song> songs = songRepository.findByCategoryId(id);
+
         return ResponseEntity.ok(songs);
     }
 }
