@@ -54,4 +54,18 @@ public class AdminController {
         }
         return ResponseEntity.notFound().build();
     }
+    // Trong AdminController.java
+    @PutMapping("/songs/{id}")
+    public ResponseEntity<Song> updateSong(@PathVariable Long id, @RequestBody Song songDetails) {
+        return songRepository.findById(id).map(song -> {
+            song.setTitle(songDetails.getTitle());
+            song.setArtist(songDetails.getArtist());
+            song.setImageUrl(songDetails.getImageUrl());
+            song.setFileUrl(songDetails.getFileUrl());
+            song.setDuration(songDetails.getDuration());
+            song.setCategory(songDetails.getCategory());
+            // ... cập nhật các trường khác ...
+            return ResponseEntity.ok(songRepository.save(song));
+        }).orElse(ResponseEntity.notFound().build());
+    }
 }
