@@ -22,4 +22,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
 
     // B. Lấy 5 bài có ID lớn nhất (Cho mục Mới phát hành - thay cho cái 7 ngày phức tạp)
     List<Song> findTop5ByOrderByIdDesc();
+
+    @Query(value = "SELECT * FROM songs ORDER BY RAND() LIMIT 5", nativeQuery = true)
+    List<Song> findRandomSongs();
 }
