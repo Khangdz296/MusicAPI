@@ -7,10 +7,5 @@ import java.util.List;
 
 @Repository
 public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
-
-    // Tìm các playlist công khai (Mục 2.7)
-    List<Playlist> findByIsPublicTrue();
-
-    // Tìm playlist của một user cụ thể (Mục 2.5 - để hiện BottomSheet)
     List<Playlist> findByUserId(Long userId);
 }
