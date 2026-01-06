@@ -2,6 +2,8 @@ package peterpan.api.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "albums")
 public class Album {
@@ -17,6 +19,9 @@ public class Album {
 
     @Column(name = "image_url")
     private String imageUrl;    // Link ảnh bìa
+
+    @OneToMany(mappedBy = "album", cascade = CascadeType.ALL)
+    private List<Song> songs;
 
     // Constructor rỗng (Bắt buộc cho JPA)
     public Album() {
@@ -41,4 +46,7 @@ public class Album {
 
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+
+    public List<Song> getSongs() { return songs; }
+    public void setSongs(List<Song> songs) { this.songs = songs; }
 }
