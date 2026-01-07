@@ -31,8 +31,7 @@ public class SendGridEmailService {
                 "Mã OTP của bạn là: " + otpCode + "\n\n" +
                 "Mã này có hiệu lực trong 5 phút.\n\n" +
                 "Nếu bạn không yêu cầu mã này, vui lòng bỏ qua email.\n\n" +
-                "Trân trọng,\n" +
-                "Đội ngũ PeterPan";
+                "Trân trọng,\n";
 
         Content content = new Content("text/plain", textContent);
         Mail mail = new Mail(from, subject, to, content);
@@ -43,10 +42,9 @@ public class SendGridEmailService {
     public void sendOtpEmailHtml(String toEmail, String otpCode) {
         Email from = new Email(fromEmail, fromName);
         Email to = new Email(toEmail);
-        String subject = "Mã OTP Xác Thực Tài Khoản - PeterPan";
+        String subject = "Mã OTP Xác Thực Tài Khoản - Music";
 
         String htmlContent = buildOtpHtmlTemplate(otpCode);
-
         Content content = new Content("text/html", htmlContent);
         Mail mail = new Mail(from, subject, to, content);
 
