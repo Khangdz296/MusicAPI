@@ -32,7 +32,7 @@ public class SongController {
     // 3. Lấy nhạc mới cập nhật (Top 5 bài ID lớn nhất)
     @GetMapping("/new-updated")
     public List<Song> getNewSongs() {
-        return songRepository.findTop5ByOrderByIdDesc();
+        return songRepository.findTop5ByOrderByCreatedAtDesc();
     }
 
     // 4. BXH Top Views (Top 10)
