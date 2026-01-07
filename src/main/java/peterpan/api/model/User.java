@@ -2,6 +2,8 @@ package peterpan.api.model;
 
 import jakarta.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -33,6 +35,14 @@ public class User {
     @Column(nullable = false)
     private String role = "USER";
 
+    // Trong file User.java (Backend)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_favorites",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "song_id")
+    )
+    private Set<Song> favoriteSongs = new HashSet<>();
 
     public User() {
     }
@@ -133,5 +143,14 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+
+    public Set<Song> getFavoriteSongs() {
+        return favoriteSongs;
+    }
+
+    public void setFavoriteSongs(Set<Song> favoriteSongs) {
+        this.favoriteSongs = favoriteSongs;
     }
 }
